@@ -1,0 +1,1347 @@
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Açmalar İlk ve Ortaokulu - Yerli Malı Haftası</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Fredoka', sans-serif;
+            background-color: #f0f9ff;
+            overflow: hidden;
+            touch-action: none;
+            user-select: none;
+        }
+
+        .screen {
+            display: none;
+            height: 100vh;
+            width: 100vw;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .active-screen {
+            display: flex;
+        }
+
+        /* Animations */
+        @keyframes fall {
+            0% { top: -150px; }
+            100% { top: 110vh; }
+        }
+
+        .falling-item {
+            position: absolute;
+            cursor: pointer;
+            z-index: 20;
+            animation-name: fall;
+            animation-timing-function: linear;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 4px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            width: 110px;
+            height: 140px;
+            touch-action: none;
+            overflow: hidden;
+            text-align: center;
+        }
+        
+        /* MAGNET EFFECT */
+        .magnet-active .falling-item {
+            transition: all 0.5s ease-in;
+        }
+
+        /* BONUS ITEM STYLES */
+        .bonus-item {
+            border: 4px solid #fbbf24; /* Amber/Gold */
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            box-shadow: 0 0 15px #fbbf24;
+        }
+        
+        .magnet-item {
+            border: 4px solid #ef4444;
+            background: #fee2e2;
+            box-shadow: 0 0 15px #ef4444;
+        }
+        
+        /* HİBRİT GÖRSEL SİSTEMİ */
+        .visual-container {
+            width: 100%;
+            height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-radius: 8px;
+            background-color: #f8fafc;
+            position: relative;
+        }
+        .visual-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; 
+            z-index: 2;
+            position: relative;
+        }
+        /* Resim Yüklenmezse Devreye Girecek Emoji Stili */
+        .emoji-fallback {
+            font-size: 65px;
+            line-height: 1;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+            display: block; /* Varsayılan olarak arkada durur */
+        }
+
+        .falling-item span {
+            font-size: 13px;
+            font-weight: bold;
+            text-align: center;
+            line-height: 1.1;
+            margin-top: 6px;
+            pointer-events: none;
+            color: #333;
+            width: 100%;
+            white-space: normal;
+        }
+
+        .factory-item {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: white;
+            padding: 4px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            width: 110px;
+            height: 120px;
+            z-index: 30;
+            border: 2px solid #cbd5e1;
+            overflow: hidden;
+        }
+        .factory-item .visual-container {
+            height: 80px;
+        }
+        .factory-item span {
+            font-size: 11px;
+            font-weight: bold;
+            margin-top: 4px;
+            pointer-events: none;
+            text-align: center;
+            color: #333;
+            width: 100%;
+        }
+
+        .btn {
+            transition: transform 0.1s;
+            cursor: pointer;
+        }
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Co-Pilot Animation */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .copilot-img {
+            animation: float 4s ease-in-out infinite;
+            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.3));
+            background-color: #e0f2fe;
+        }
+
+        /* Speech Bubble */
+        .bubble {
+            position: relative;
+            background: #fff;
+            border-radius: .8em;
+            border: 4px solid #3b82f6;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-transform: uppercase; /* BÜYÜK HARF */
+        }
+        .bubble:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 20%;
+            width: 0;
+            height: 0;
+            border: 20px solid transparent;
+            border-top-color: #3b82f6;
+            border-bottom: 0;
+            border-left: 0;
+            margin-left: -10px;
+            margin-bottom: -20px;
+        }
+
+        /* MISSION BAR STYLES */
+        .mission-bar {
+            background: repeating-linear-gradient(
+                45deg,
+                #fbbf24,
+                #fbbf24 10px,
+                #f59e0b 10px,
+                #f59e0b 20px
+            );
+            color: #1e3a8a;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* LEVEL 4 SMOKE EFFECT */
+        @keyframes smokePass {
+            0% { opacity: 0; transform: translateX(-100%); }
+            50% { opacity: 0.95; transform: translateX(0); }
+            100% { opacity: 0; transform: translateX(100%); }
+        }
+        .smoke-overlay {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle, rgba(200,200,200,0.9) 0%, rgba(100,100,100,0.8) 100%);
+            z-index: 35;
+            pointer-events: none; /* Click through */
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 2rem;
+            font-weight: bold;
+            text-shadow: 0 0 10px #000;
+        }
+
+        /* LEVEL 3 FLASHLIGHT EFFECT */
+        #l3-flashlight {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle 150px at var(--x, 50%) var(--y, 50%), transparent 0%, rgba(0,0,0,0.98) 100%);
+            z-index: 40;
+            pointer-events: none; /* Clicks pass through */
+            transition: background 0.1s;
+        }
+        .lights-on #l3-flashlight {
+            background: transparent !important;
+        }
+        
+        .firefly {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            font-size: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 45; /* Above flashlight */
+            cursor: pointer;
+            filter: drop-shadow(0 0 15px #fde047);
+            animation: floatFirefly 5s linear infinite;
+        }
+        @keyframes floatFirefly {
+            0% { left: -10%; top: 50%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { left: 110%; top: 40%; opacity: 0; }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.554.0"
+  }
+}
+</script>
+</head>
+<body>
+
+    <!-- AUDIO ELEMENTS -->
+    <!-- Müzik: Macera / Epik (Hall of the Mountain King - Grieg) -->
+    <audio id="bg-music" loop>
+        <source src="https://upload.wikimedia.org/wikipedia/commons/6/6e/Grieg_In_the_Hall_of_the_Mountain_King.ogg" type="audio/ogg">
+        Tarayıcınız sesi desteklemiyor.
+    </audio>
+
+    <!-- HEADER & MISSION BAR -->
+    <div id="game-header-container" class="fixed top-0 left-0 w-full z-50 hidden flex-col">
+        <!-- Main Header -->
+        <div class="bg-red-600 text-white shadow-lg w-full">
+            <div class="flex flex-row justify-between items-center p-2 md:p-3">
+                <div>
+                    <h1 class="text-sm md:text-xl font-bold">Açmalar İlk ve Ortaokulu</h1>
+                </div>
+                <div class="flex gap-2 md:gap-4">
+                    <div class="bg-red-800 px-2 py-1 rounded-lg font-bold text-xs md:text-lg">
+                        Bölüm: <span id="level-display">1</span>/5
+                    </div>
+                    <div class="bg-white text-red-700 px-2 py-1 rounded-lg font-bold text-xs md:text-lg border-2 border-red-800 min-w-[80px] text-center">
+                        Puan: <span id="score-display">0</span>
+                    </div>
+                    <div class="hidden md:flex items-center">
+                        <div id="hearts-container" class="flex text-xl">❤️❤️❤️</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- MISSION BAR (GÖREV ÇUBUĞU) -->
+        <div class="mission-bar w-full py-2 px-4 flex justify-center items-center gap-2 md:gap-4 text-xs md:text-base font-bold border-b-4 border-amber-600">
+            <span class="bg-white/80 px-2 py-1 rounded shadow text-amber-900">🎯 GÖREV:</span>
+            <span id="mission-text" class="text-blue-900 uppercase">Yerli Malı Topla</span>
+            <span class="text-amber-800">|</span>
+            <span id="mission-progress" class="bg-blue-100 text-blue-800 px-2 py-1 rounded shadow">Kalan: 100</span>
+        </div>
+    </div>
+
+    <!-- CO-PILOT (Satuk Buğra) -->
+    <div id="copilot-container" class="fixed bottom-4 left-4 z-[60] hidden flex-col items-start w-56 md:w-72 pointer-events-none">
+        <div id="copilot-bubble" class="bubble bg-white p-4 rounded-xl shadow-xl mb-4 text-blue-900 text-sm md:text-lg font-bold transition-opacity duration-500 opacity-0 w-full leading-tight border-b-4 border-blue-500">
+            Merhaba! Ben Satuk Buğra.
+        </div>
+        <div class="flex items-end">
+            <!-- Satuk Buğra: Fatih Sultan Mehmet Portresi -->
+            <div class="w-28 h-28 md:w-36 md:h-36 copilot-img rounded-full border-4 border-white shadow-2xl overflow-hidden flex items-center justify-center relative bg-amber-100">
+                <div class="absolute inset-0 flex items-center justify-center text-6xl z-0">👳‍♂️</div>
+                <!-- KULLANICININ GÖNDERDİĞİ FATİH RESMİ LİNKİ -->
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Sultan_Mehmed_II_the_Conqueror.jpg/250px-Sultan_Mehmed_II_the_Conqueror.jpg" 
+                     class="w-full h-full object-cover relative z-10"
+                     alt="Satuk Buğra"
+                     onerror="this.style.display='none'">
+            </div>
+            <div class="bg-red-600 text-white text-xs md:text-sm px-4 py-2 rounded-full -ml-8 mb-4 shadow-lg z-20 font-bold border-2 border-white whitespace-nowrap">
+                SATUK BUĞRA
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast-container" class="fixed top-40 left-1/2 transform -translate-x-1/2 z-[80] flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- WELCOME SCREEN -->
+    <div id="screen-welcome" class="screen active-screen bg-slate-50">
+        <div class="bg-white p-6 md:p-10 rounded-3xl shadow-2xl max-w-2xl text-center border-b-8 border-red-200 mx-4 w-full">
+            
+            <div class="mb-4">
+                <span class="bg-red-100 text-red-600 px-6 py-2 rounded-full font-bold text-lg">12-18 Aralık</span>
+            </div>
+            <h1 class="text-3xl md:text-5xl font-extrabold text-slate-800 mb-2 tracking-tight">Açmalar İlk ve Ortaokulu</h1>
+            <h2 class="text-xl md:text-3xl font-bold text-red-600 mb-8">Tutum, Yatırım ve Yerli Malları Haftası</h2>
+            <p class="text-lg md:text-xl text-slate-600 mb-4 font-semibold">Hoş geldiniz Kahramanlar!</p>
+            <p class="text-sm md:text-md text-gray-500 mb-8 italic bg-yellow-50 p-3 rounded-lg border border-yellow-100 inline-block">"Ben Satuk Buğra, bu yolculukta rehberin olacağım."</p>
+            
+            <button onclick="startGame()" class="btn w-full bg-green-600 hover:bg-green-700 text-white text-2xl md:text-3xl font-bold py-6 rounded-2xl shadow-xl border-b-8 border-green-800 flex items-center justify-center gap-3 group">
+                <span class="group-hover:scale-110 transition-transform">▶</span> <span>OYUNA BAŞLA</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- LEVEL 1: FALLING ITEMS -->
+    <div id="screen-level1" class="screen bg-sky-100 overflow-hidden relative">
+        <div id="l1-overlay" class="absolute inset-0 bg-black/70 z-40 flex flex-col items-center justify-center text-white text-center p-4">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4">1. Bölüm: Yerli Malı Toplama</h2>
+            <p class="text-lg md:text-xl mb-4 max-w-lg">Yukarıdan düşen <span class="text-green-400 font-bold">YERLİ ve MİLLİ</span> ürünleri topla.</p>
+            <p class="text-md md:text-lg mb-8 text-gray-300">Yabancı ve zararlı ürünlere dokunma!<br><strong>İpucu:</strong> Mıknatısları kaçırma!</p>
+            <button onclick="startLevel1Action()" class="btn bg-blue-500 text-white px-10 py-4 rounded-xl text-2xl font-bold">BAŞLA</button>
+        </div>
+        
+        <div class="absolute top-32 left-4 bg-white/90 px-4 py-2 md:px-6 md:py-3 rounded-full font-bold text-xl md:text-2xl text-sky-800 border-4 border-sky-300 z-10 shadow-lg">
+            ⏱️ <span id="l1-timer">40</span> sn
+        </div>
+        
+        <div id="l1-game-area" class="w-full h-full relative touch-none pt-24"></div>
+    </div>
+
+    <!-- LEVEL 2: SHOPPING -->
+    <div id="screen-level2" class="screen bg-amber-50">
+        <div id="l2-intro" class="absolute inset-0 bg-black/70 z-40 flex flex-col items-center justify-center text-white text-center p-4">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4">2. Bölüm: Tutumlu Alışveriş</h2>
+            <p class="text-lg md:text-xl mb-8 max-w-lg">Markettesin. Sepetine sadece <span class="text-green-400 font-bold">YERLİ, SAĞLIKLI ve GEREKLİ</span> ürünleri at.<br>Barkoduna (869) dikkat et!</p>
+            <button onclick="startLevel2Action()" class="btn bg-amber-600 text-white px-10 py-4 rounded-xl text-2xl font-bold">ALIŞVERİŞE BAŞLA</button>
+        </div>
+
+        <div id="l2-report-modal" class="absolute inset-0 bg-black/80 z-50 hidden flex-col items-center justify-center p-4">
+            <div class="bg-white w-full max-w-3xl rounded-2xl p-6 overflow-y-auto max-h-[90vh]">
+                <h3 class="text-2xl md:text-3xl font-bold text-red-600 mb-4 text-center">Alışveriş Raporu</h3>
+                <p class="text-center text-gray-600 mb-6">Satuk Buğra sepetini inceledi ve hatalar buldu:</p>
+                <div id="l2-report-content" class="space-y-4 mb-6"></div>
+                <div class="text-center">
+                    <button onclick="finishLevel2()" class="btn bg-green-600 text-white px-8 py-3 rounded-xl text-xl font-bold">Anladım, Devam Et ➡</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="w-full max-w-7xl h-full pt-32 pb-4 px-4 flex flex-col">
+            <div class="flex justify-between bg-white p-4 rounded-xl shadow-md mb-4 border-2 border-amber-200">
+                <div class="text-lg md:text-2xl font-bold text-green-700">Bütçe: <span id="l2-budget">150</span> TL</div>
+                <div class="text-lg md:text-2xl font-bold text-blue-700">Sepet: <span id="l2-cart-total">0</span> TL</div>
+            </div>
+            <div id="l2-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4 flex-1 overflow-y-auto p-2"></div>
+            <button onclick="checkShopping()" class="btn mt-2 bg-green-600 text-white py-3 md:py-4 rounded-xl text-xl md:text-2xl font-bold shadow-lg w-full">KASAYA GİT (ALIŞVERİŞİ BİTİR) ✅</button>
+        </div>
+    </div>
+
+    <!-- LEVEL 3: ENERGY (FLASHLIGHT MODE) -->
+    <div id="screen-level3" class="screen bg-slate-800 text-white relative">
+        <div id="l3-flashlight"></div> <!-- El Feneri Katmanı -->
+        <div id="l3-fireflies"></div> <!-- Ateş Böceği Katmanı -->
+
+        <div id="l3-intro" class="absolute inset-0 bg-black/90 z-[60] flex flex-col items-center justify-center text-center p-4">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4">3. Bölüm: Gece Nöbeti</h2>
+            <p class="text-lg md:text-xl mb-4 max-w-lg">Elektrikler kesildi ve oda karanlık!<br>Ama açık kalan cihazlar israf yapıyor.</p>
+            <p class="text-yellow-300 mb-8 font-bold">Fareyi/Parmağını fener gibi kullan, açık cihazları bul ve kapat!</p>
+            <div class="flex flex-col items-center gap-2 mb-4">
+                 <div class="text-4xl">🐝</div>
+                 <p class="text-sm">Ateş böceklerini yakalarsan ışık gelir!</p>
+            </div>
+            <button onclick="startLevel3Action()" class="btn bg-yellow-500 text-slate-900 px-10 py-4 rounded-xl text-2xl font-bold">GÖREVE BAŞLA</button>
+        </div>
+
+        <div class="absolute top-32 right-4 bg-slate-700 px-6 py-3 rounded-lg border border-slate-500 z-[50] flex gap-4">
+            <div class="text-2xl font-mono font-bold text-red-400" id="l3-timer">30 sn</div>
+        </div>
+        
+        <div class="absolute top-32 left-4 bg-slate-900 px-4 py-2 rounded-lg z-[50]">
+            <span class="text-yellow-400 font-bold">Açık Cihaz: </span><span id="l3-counter" class="text-white">6</span>
+        </div>
+
+        <div id="l3-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 w-full max-w-6xl px-4 md:px-6 pt-60 pb-10 overflow-y-auto"></div>
+    </div>
+
+    <!-- LEVEL 4: FACTORY -->
+    <div id="screen-level4" class="screen bg-gray-100">
+        <div id="l4-intro" class="absolute inset-0 bg-black/70 z-40 flex flex-col items-center justify-center text-white text-center p-4">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4">4. Bölüm: Zorlu Fabrika</h2>
+            <p class="text-lg md:text-xl mb-8 max-w-lg">Bant gittikçe <span class="text-red-500 font-bold">HIZLANACAK!</span><br>Arada duman çıkabilir, dikkatli ol.<br>Hatalı ürünleri yok et, yerlilere dokunma.</p>
+            <button onclick="startLevel4Action()" class="btn bg-orange-500 text-white px-10 py-4 rounded-xl text-2xl font-bold">ÜRETİMİ BAŞLAT</button>
+        </div>
+
+        <div class="absolute top-32 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-8 py-2 rounded-b-xl shadow-lg z-20">
+            <span class="text-3xl font-mono font-bold" id="l4-timer">40</span> sn
+        </div>
+
+        <div class="w-full h-64 md:h-80 bg-slate-700 relative mt-32 flex items-center border-y-8 border-slate-600 overflow-hidden shadow-2xl">
+            <div class="absolute inset-0 opacity-20" style="background-image: repeating-linear-gradient(90deg, transparent, transparent 50px, #000 50px, #000 55px);"></div>
+            <div id="l4-belt" class="w-full h-full relative"></div>
+            <!-- DUMAN EFEKTİ -->
+            <div id="l4-smoke" class="smoke-overlay">DİKKAT! DUMAN ALTI!</div>
+        </div>
+
+        <div class="mt-10 text-center opacity-50">
+            <div class="text-6xl mb-2">🗑️</div>
+            <p class="text-xl font-bold text-gray-500">Hatalıları Tıkla ve Yok Et</p>
+        </div>
+    </div>
+
+    <!-- LEVEL 5: INVESTMENT (FINAL) -->
+    <div id="screen-level5" class="screen bg-indigo-50">
+        <div class="text-center max-w-6xl mx-auto px-4 pt-20">
+            <h2 class="text-3xl md:text-4xl font-bold text-indigo-900 mb-4">5. Bölüm: Büyük Karar</h2>
+            <p class="text-xl md:text-2xl text-indigo-700 mb-10">Topladığın puanları nasıl değerlendirmek istersin?</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+                <button onclick="endGame('kumbara')" class="btn bg-white p-8 rounded-3xl shadow-xl border-b-8 border-amber-600 flex flex-col items-center hover:bg-amber-50 group">
+                    <!-- DOMUZ YERİNE TESTİ/KESE -->
+                    <div class="text-8xl mb-4 group-hover:scale-110 transition-transform">🏺</div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">Toprak Testi</h3>
+                    <p class="text-gray-500">Anadolu usulü birikim.</p>
+                </button>
+                <button onclick="endGame('agac')" class="btn bg-white p-8 rounded-3xl shadow-xl border-b-8 border-green-200 flex flex-col items-center hover:bg-green-50 group">
+                    <div class="text-8xl mb-4 group-hover:scale-110 transition-transform">🌱</div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">Fidan Dik</h3>
+                    <p class="text-gray-500">Vatan toprağına yatırım yap.</p>
+                </button>
+                <button onclick="endGame('kobi')" class="btn bg-white p-8 rounded-3xl shadow-xl border-b-8 border-blue-200 flex flex-col items-center hover:bg-blue-50 group">
+                    <div class="text-8xl mb-4 group-hover:scale-110 transition-transform">🏪</div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">Yerli Esnaf</h3>
+                    <p class="text-gray-500">Mahallemizin bakkalından al.</p>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- END SCREEN -->
+    <div id="screen-end" class="screen bg-gradient-to-br from-yellow-100 to-orange-100">
+        <div class="bg-white p-10 rounded-3xl shadow-2xl text-center max-w-2xl border-4 border-white mx-4">
+            <div id="end-icon" class="text-8xl mb-6">🏆</div>
+            <h2 id="end-title" class="text-4xl font-bold text-gray-800 mb-4">Tebrikler!</h2>
+            <p id="end-desc" class="text-xl text-gray-600 mb-8">Harika bir iş çıkardın.</p>
+            <div class="bg-green-100 p-6 rounded-2xl mb-8">
+                <p class="text-green-800 font-bold uppercase text-sm">TOPLAM PUAN</p>
+                <p id="final-score-display" class="text-6xl font-bold text-green-600">0</p>
+            </div>
+            <button onclick="location.reload()" class="btn bg-blue-600 text-white px-12 py-4 rounded-xl text-xl font-bold shadow-lg">BAŞA DÖN ↺</button>
+        </div>
+    </div>
+
+    <!-- TRANSITION POPUP -->
+    <div id="transition-modal" class="fixed inset-0 bg-black/80 z-[100] hidden flex-col items-center justify-center">
+        <div class="bg-white p-8 rounded-3xl text-center animate-bounce max-w-lg mx-4 border-4 border-green-500">
+            <h2 class="text-3xl font-bold text-green-600 mb-2">Bölüm Tamamlandı!</h2>
+            <p id="transition-msg" class="text-gray-600 mb-4">Süpersin!</p>
+            <div class="text-6xl my-4">⭐</div>
+            <button onclick="nextLevel()" class="btn bg-blue-600 text-white px-10 py-3 rounded-xl text-2xl font-bold shadow-lg">SONRAKİ BÖLÜM ➡</button>
+        </div>
+    </div>
+
+    <script>
+        // --- HİBRİT VERİ HAVUZU ---
+        const DATA_POOL = {
+            good: [
+                { name: "SİMİT", img: "https://upload.wikimedia.org/wikipedia/commons/c/c8/Simit.jpg", emoji: "🥯" },
+                { name: "ÇAY", img: "https://upload.wikimedia.org/wikipedia/commons/5/5c/Turkish_tea.jpg", emoji: "☕" },
+                { name: "KESTANE", img: "https://upload.wikimedia.org/wikipedia/commons/2/2c/Chestnut.jpg", emoji: "🌰" },
+                { name: "İNCİR", img: "https://upload.wikimedia.org/wikipedia/commons/4/4c/Figs.jpg", emoji: "🟣" },
+                { name: "ELMA", img: "https://upload.wikimedia.org/wikipedia/commons/1/15/Red_Apple.jpg", emoji: "🍎" },
+                { name: "FINDIK", img: "https://upload.wikimedia.org/wikipedia/commons/3/31/Hazelnuts.jpg", emoji: "🥜" },
+                { name: "ZEYTİN", img: "https://upload.wikimedia.org/wikipedia/commons/a/a3/Black_Olives.jpg", emoji: "🫒" },
+                { name: "SÜT", img: "https://upload.wikimedia.org/wikipedia/commons/a/a5/Glass_of_Milk.jpg", emoji: "🥛" },
+                { name: "EKMEK", img: "https://upload.wikimedia.org/wikipedia/commons/d/d1/Bread.jpg", emoji: "🍞" },
+                { name: "YOĞURT", img: "https://upload.wikimedia.org/wikipedia/commons/9/9e/Yogurt.jpg", emoji: "🥣" },
+                { name: "KARPUZ", img: "https://upload.wikimedia.org/wikipedia/commons/e/ea/Watermelon.jpg", emoji: "🍉" },
+                { name: "LAHMACUN", img: "https://upload.wikimedia.org/wikipedia/commons/c/c7/Lahmacun.jpg", emoji: "🥙" },
+                { name: "BAKLAVA", img: "https://upload.wikimedia.org/wikipedia/commons/c/c3/Baklava_-_Turkish_speciality.jpg", emoji: "🥧" },
+                { name: "TÜRK BAYRAĞI", img: "https://upload.wikimedia.org/wikipedia/commons/b/b4/Flag_of_Turkey.svg", emoji: "🇹🇷" },
+                { name: "SUCUK", img: "https://upload.wikimedia.org/wikipedia/commons/0/08/Sucuk.jpg", emoji: "🥩" }
+            ],
+            bad: [
+                { name: "KOLA", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/15-09-26-RalfR-WLC-0098.jpg/640px-15-09-26-RalfR-WLC-0098.jpg", emoji: "🥤" },
+                { name: "CİPS", img: "https://upload.wikimedia.org/wikipedia/commons/6/69/Potato-Chips.jpg", emoji: "🍟" },
+                { name: "HAMBURGER", img: "https://upload.wikimedia.org/wikipedia/commons/4/47/Hamburger.jpg", emoji: "🍔" },
+                { name: "PİL", img: "https://upload.wikimedia.org/wikipedia/commons/e/ea/Batteries.jpg", emoji: "🔋" },
+                { name: "ŞEKER", img: "https://upload.wikimedia.org/wikipedia/commons/e/e3/Bonbons.jpg", emoji: "🍬" },
+                { name: "OYUNCAK", img: "https://upload.wikimedia.org/wikipedia/commons/5/5d/Lego_bricks.jpg", emoji: "🤖" },
+                { name: "DONDURMA", img: "https://upload.wikimedia.org/wikipedia/commons/3/31/Ice_Cream_dessert_02.jpg", emoji: "🍦" },
+                { name: "SOSİS", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Roasted_sausages.jpg/640px-Roasted_sausages.jpg", emoji: "🌭" }
+            ],
+            l3: [
+                { id: 1, name: 'Boş Işık', type: 'waste', img: '', emoji: '💡', isOn: true, room: 'Oda' },
+                { id: 2, name: 'Musluk', type: 'waste', img: '', emoji: '🚰', isOn: true, room: 'Banyo' },
+                { id: 3, name: 'TV', type: 'waste', img: '', emoji: '📺', isOn: true, room: 'Salon' },
+                { id: 4, name: 'Kombi', type: 'essential', img: '', emoji: '🔥', isOn: true, room: 'Koridor' },
+                { id: 5, name: 'Buzdolabı', type: 'essential', img: '', emoji: '❄️', isOn: true, room: 'Mutfak' },
+                { id: 6, name: 'PC', type: 'waste', img: '', emoji: '💻', isOn: true, room: 'Oda' },
+                { id: 7, name: 'Oda Işığı', type: 'waste', img: '', emoji: '💡', isOn: true, room: 'Oda' },
+                { id: 8, name: 'Radyo', type: 'waste', img: '', emoji: '📻', isOn: true, room: 'Mutfak' }
+            ],
+            bonus: { name: "BOR MADENİ", img: "https://upload.wikimedia.org/wikipedia/commons/9/91/Boron_R105.jpg", emoji: "💎" },
+            magnet: { name: "MIKNATIS", img: "", emoji: "🧲" }
+        };
+
+        const CO_QUOTES = [
+            "BARKOD NUMARASI 869 İLE BAŞLAYAN ÜRÜN TÜRK MALIDIR!",
+            "YERLİ MALI YURDUN MALI, HERKES ONU KULLANMALI!",
+            "PARAMIZI ÇARÇUR ETMEYELİM, KUMBARAYA ATALIM!",
+            "ÜLKEMİZİN KAZANMASI İÇİN YERLİ ÜRETİCİYE DESTEK OL!",
+            "ENERJİ TASARRUFU GELECEĞİMİZ İÇİN ÇOK ÖNEMLİDİR.",
+            "AÇIK KALAN IŞIKLARI KAPATALIM, DOĞAYI KORUYALIM.",
+            "SAĞLIKLI OLMAK İÇİN KOLA DEĞİL, AYRAN İÇMELİSİN!",
+            "CİPS YERİNE FINDIK, CEVİZ YEMELİSİN KAHRAMAN!",
+            "TUTUMLU OLMAK CİMRİLİK DEĞİLDİR, AKILLILIKTIR!",
+            "DAMLAYA DAMLAYA GÖL OLUR, UNUTMA!",
+            "İSRAF ETMEK YOK! YİYEBİLECEĞİN KADAR AL.",
+            "BU TOPRAKLARDA YETİŞEN ÜRÜNLER EN GÜZELİDİR!"
+        ];
+
+        let l1_good_deck = [];
+        let l1_bad_deck = [];
+        let l4_good_deck = [];
+        let l4_bad_deck = [];
+
+        function shuffleArray(array) {
+            let arr = [...array];
+            let curId = arr.length;
+            while (0 !== curId) {
+                let randId = Math.floor(Math.random() * curId);
+                curId -= 1;
+                let tmp = arr[curId];
+                arr[curId] = arr[randId];
+                arr[randId] = tmp;
+            }
+            return arr;
+        }
+
+        function getNextItem(deck, sourcePool) {
+            if (deck.length === 0) deck = shuffleArray(sourcePool);
+            const item = deck.pop();
+            return { item: item, newDeck: deck };
+        }
+
+        let gameState = { score: 0, level: 1, lives: 3, timers: [], intervals: [] };
+        let copilotTimeout;
+        let copilotInterval;
+
+        function updateMission(text, progress) {
+            document.getElementById('mission-text').innerText = text;
+            document.getElementById('mission-progress').innerText = progress;
+        }
+
+        function playMusic() {
+            const audio = document.getElementById('bg-music');
+            if (audio) {
+                audio.volume = 0.4; 
+                const playPromise = audio.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => { console.log("Audio waiting for interaction"); });
+                }
+            }
+        }
+
+        function copilotSay(text, duration = 5000) {
+            const bubble = document.getElementById('copilot-bubble');
+            bubble.innerText = text;
+            bubble.style.opacity = 1;
+            // Animasyon etkisi
+            const img = document.querySelector('.copilot-img');
+            img.style.transform = "scale(1.2)";
+            setTimeout(() => img.style.transform = "scale(1)", 300);
+
+            clearTimeout(copilotTimeout);
+            copilotTimeout = setTimeout(() => {
+                bubble.style.opacity = 0;
+            }, duration);
+        }
+
+        function startCopilotRoutine() {
+            if(copilotInterval) clearInterval(copilotInterval);
+            copilotInterval = setInterval(() => {
+                const quote = CO_QUOTES[Math.floor(Math.random() * CO_QUOTES.length)];
+                copilotSay(quote);
+            }, 8000);
+        }
+
+        function playSound(type) {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            if(type === 'good') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(500, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(1000, ctx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.1);
+            } else if(type === 'bad') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, ctx.currentTime);
+                osc.frequency.linearRampToValueAtTime(100, ctx.currentTime + 0.2);
+                gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.2);
+            } else if(type === 'bonus') {
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(400, ctx.currentTime);
+                osc.frequency.linearRampToValueAtTime(800, ctx.currentTime + 0.1);
+                osc.frequency.linearRampToValueAtTime(1200, ctx.currentTime + 0.2);
+                gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.5);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.5);
+            }
+        }
+
+        function showToast(msg, type='info') {
+            const container = document.getElementById('toast-container');
+            const el = document.createElement('div');
+            let color = 'bg-yellow-500';
+            if(type === 'good') color = 'bg-green-600';
+            if(type === 'bad') color = 'bg-red-600';
+            if(type === 'bonus') color = 'bg-amber-400 text-black'; 
+            
+            el.className = `${color} text-white px-6 py-3 rounded-full shadow-xl text-xl font-bold toast-msg border-2 border-white text-center`;
+            el.innerText = msg;
+            container.appendChild(el);
+            setTimeout(() => el.remove(), 2000);
+        }
+
+        function clearAllTimers() {
+            gameState.timers.forEach(t => clearTimeout(t));
+            gameState.intervals.forEach(i => clearInterval(i));
+            gameState.timers = [];
+            gameState.intervals = [];
+        }
+
+        function updateScore(points) {
+            gameState.score += points;
+            if(gameState.score < 0) gameState.score = 0;
+            document.getElementById('score-display').innerText = gameState.score;
+        }
+
+        function updateLives(change) {
+            gameState.lives += change;
+            if(gameState.lives > 3) gameState.lives = 3;
+            if(gameState.lives < 0) gameState.lives = 0;
+            
+            const container = document.getElementById('hearts-container');
+            container.innerHTML = '❤️'.repeat(gameState.lives) + '🖤'.repeat(3 - gameState.lives);
+
+            if(gameState.lives === 0) {
+                showToast("Canın Bitti!", "bad");
+                copilotSay("HATA YAPMA LÜKSÜMÜZ YOK KAHRAMAN! TEKRAR DENE.", 4000);
+                setTimeout(() => {
+                     alert("Dikkatli olmalısın! Canların bitti. Bu bölümü tekrar dene.");
+                     restartCurrentLevel();
+                }, 500);
+            }
+        }
+
+        function restartCurrentLevel() {
+            clearAllTimers();
+            gameState.lives = 3;
+            updateLives(0);
+            if(gameState.level === 1) { gameState.score = 0; updateScore(0); initLevel1(); }
+            else if(gameState.level === 2) initLevel2();
+            else if(gameState.level === 3) initLevel3();
+            else if(gameState.level === 4) initLevel4();
+        }
+
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
+            document.getElementById(id).classList.add('active-screen');
+            
+            if(id !== 'screen-welcome' && id !== 'screen-end') {
+                document.getElementById('game-header-container').classList.replace('hidden', 'flex');
+                document.getElementById('level-display').innerText = gameState.level;
+                document.getElementById('copilot-container').classList.replace('hidden', 'flex');
+                startCopilotRoutine();
+            } else {
+                document.getElementById('game-header-container').classList.replace('flex', 'hidden');
+                document.getElementById('copilot-container').classList.replace('flex', 'hidden');
+                if(copilotInterval) clearInterval(copilotInterval);
+            }
+        }
+
+        function showTransition(msg) {
+            clearAllTimers();
+            document.getElementById('l1-game-area').innerHTML = '';
+            document.getElementById('transition-msg').innerText = msg;
+            const modal = document.getElementById('transition-modal');
+            modal.style.display = 'flex';
+            copilotSay("HARİKASIN! ÇOK GÜZEL İLERLİYORSUN.", 3000);
+        }
+
+        function nextLevel() {
+            document.getElementById('transition-modal').style.display = 'none';
+            gameState.level++;
+            
+            if(gameState.level === 2) initLevel2();
+            else if(gameState.level === 3) initLevel3();
+            else if(gameState.level === 4) initLevel4();
+            else if(gameState.level === 5) initLevel5();
+        }
+
+        function startGame() {
+            playMusic(); 
+            gameState.score = 0;
+            gameState.level = 1;
+            gameState.lives = 3;
+            updateLives(0);
+            updateScore(0);
+            initLevel1();
+        }
+
+        // --- LEVEL 1 (YENİ ÖZELLİK: MIKNATIS) ---
+        function initLevel1() {
+            showScreen('screen-level1');
+            document.getElementById('l1-overlay').style.display = 'flex';
+            document.getElementById('l1-game-area').innerHTML = '';
+            l1_good_deck = shuffleArray(DATA_POOL.good);
+            l1_bad_deck = shuffleArray(DATA_POOL.bad);
+            updateMission("YERLİ MALI TOPLA", "Kalan Hedef: 100 Puan");
+        }
+
+        function startLevel1Action() {
+            playMusic();
+            document.getElementById('l1-overlay').style.display = 'none';
+            copilotSay("HAYDİ BAKALIM! SADECE YERLİ ÜRÜNLERİ TOPLA!", 4000);
+            let timeLeft = 40; 
+            const timerEl = document.getElementById('l1-timer');
+            timerEl.innerText = timeLeft;
+
+            const timerInt = setInterval(() => {
+                timeLeft--;
+                timerEl.innerText = timeLeft;
+                if(timeLeft <= 0) {
+                    clearAllTimers();
+                    if(gameState.score >= 100) showTransition("Süre bitti ama iyi topladın!");
+                    else {
+                        alert("Yeterli puan toplayamadın. Tekrar dene.");
+                        restartCurrentLevel();
+                    }
+                }
+            }, 1000);
+            gameState.intervals.push(timerInt);
+
+            const spawnInt = setInterval(() => spawnFallingItem(), 900);
+            gameState.intervals.push(spawnInt);
+        }
+        
+        // Mıknatıs Efekti
+        function activateMagnet() {
+            showToast("MIKNATIS AKTİF!", "bonus");
+            copilotSay("İŞTE BU! HEPSİNİ ÇEKİYORUM!", 2000);
+            document.getElementById('l1-game-area').classList.add('magnet-active');
+            
+            // Ekrandaki tüm iyi ürünleri topla
+            const items = document.querySelectorAll('.falling-item');
+            items.forEach(el => {
+                if(el.dataset.type === 'good') {
+                    // Animasyonla merkeze çek ve yok et
+                    el.style.top = '100vh'; // Hızlı düşüş efekti gibi
+                    el.style.opacity = '0';
+                    updateScore(10);
+                }
+            });
+            
+            setTimeout(() => {
+                document.getElementById('l1-game-area').classList.remove('magnet-active');
+            }, 1000);
+        }
+
+        function spawnFallingItem() {
+            const container = document.getElementById('l1-game-area');
+            const el = document.createElement('div');
+            
+            const rand = Math.random();
+            const isBonus = rand < 0.05; // %5 Bor
+            const isMagnet = rand > 0.95; // %5 Mıknatıs
+            let isGood = Math.random() > 0.35; 
+            let itemData;
+            let type = 'neutral';
+
+            if (isBonus) {
+                itemData = DATA_POOL.bonus;
+                el.className = 'falling-item bonus-item';
+                type = 'bonus';
+            } else if (isMagnet) {
+                itemData = DATA_POOL.magnet;
+                el.className = 'falling-item magnet-item';
+                type = 'magnet';
+            } else {
+                if(isGood) {
+                    const res = getNextItem(l1_good_deck, DATA_POOL.good);
+                    itemData = res.item;
+                    l1_good_deck = res.newDeck;
+                    el.className = 'falling-item border-2 border-green-200';
+                    type = 'good';
+                } else {
+                    const res = getNextItem(l1_bad_deck, DATA_POOL.bad);
+                    itemData = res.item;
+                    l1_bad_deck = res.newDeck;
+                    el.className = 'falling-item border-2 border-red-200';
+                    type = 'bad';
+                }
+            }
+            
+            el.dataset.type = type; // Mıknatıs için işaretle
+            
+            el.innerHTML = `
+                <div class="visual-container">
+                    <div class="emoji-fallback">${itemData.emoji}</div>
+                    <img src="${itemData.img}" 
+                         alt="${itemData.name}" 
+                         onerror="this.style.display='none';">
+                </div>
+                <span>${itemData.name}</span>
+            `;
+            
+            el.style.left = (Math.random() * 70 + 10) + '%';
+            el.style.animationDuration = (Math.random() * 3 + 4) + 's';
+
+            el.onpointerdown = function(e) {
+                e.preventDefault();
+                el.style.transition = "transform 0.1s, opacity 0.1s";
+                el.style.transform = "scale(1.5)";
+                el.style.opacity = "0";
+                el.style.pointerEvents = "none";
+
+                if (type === 'bonus') {
+                    updateScore(50);
+                    playSound('bonus');
+                    showToast("TÜRKİYE'NİN GÜCÜ! +50", 'bonus');
+                    copilotSay("BRAVO! BOR MADENİNİ BULDUN!", 2000);
+                } else if (type === 'magnet') {
+                    playSound('bonus');
+                    activateMagnet();
+                } else if(type === 'good') {
+                    updateScore(10);
+                    playSound('good');
+                    showToast("+10", 'good');
+                } else {
+                    updateScore(-5);
+                    updateLives(-1);
+                    playSound('bad');
+                    showToast("-1 Can", 'bad');
+                    copilotSay("SAKIN HA! O ZARARLI!", 1500);
+                }
+
+                const remaining = Math.max(0, 100 - gameState.score);
+                updateMission("YERLİ MALI TOPLA", "Kalan Hedef: " + remaining + " Puan");
+                
+                if(gameState.level === 1 && gameState.score >= 100) {
+                    setTimeout(() => {
+                        clearAllTimers();
+                        showTransition("Harika! 100 Puan topladın!");
+                    }, 200);
+                }
+                
+                setTimeout(() => el.remove(), 200);
+            };
+
+            el.addEventListener('animationend', () => {
+                if(document.body.contains(el)) el.remove();
+            });
+            container.appendChild(el);
+        }
+
+        // --- LEVEL 2 ---
+        let l2_cart = [];
+        let l2_budget = 150;
+        let l2_current_shop_items = [];
+
+        function initLevel2() {
+            showScreen('screen-level2');
+            document.getElementById('l2-intro').style.display = 'flex';
+            document.getElementById('l2-report-modal').style.display = 'none';
+            l2_cart = [];
+            
+            const shuffledGood = shuffleArray(DATA_POOL.good).slice(0, 12);
+            const shuffledBad = shuffleArray(DATA_POOL.bad).slice(0, 8);
+            let combined = [...shuffledGood.map(i => ({...i, isGood: true, price: Math.floor(Math.random()*20)+5})), 
+                           ...shuffledBad.map(i => ({...i, isGood: false, price: Math.floor(Math.random()*20)+15}))];
+            l2_current_shop_items = shuffleArray(combined);
+
+            renderL2Items();
+            updateL2UI();
+            updateMission("BÜTÇEYİ AŞMA & DOĞRU SEÇ", "Kalan Bütçe: " + l2_budget + " TL");
+        }
+
+        function startLevel2Action() {
+            document.getElementById('l2-intro').style.display = 'none';
+            copilotSay("869 İLE BAŞLAYAN BARKODLARI BUL! YABANCI ALMA.", 4000);
+        }
+
+        function updateL2UI() {
+            const cartTotal = l2_cart.reduce((sum, item) => sum + item.price, 0);
+            const remaining = l2_budget - cartTotal;
+            document.getElementById('l2-budget').innerText = remaining;
+            document.getElementById('l2-cart-total').innerText = cartTotal;
+            updateMission("BÜTÇEYİ AŞMA & DOĞRU SEÇ", "Kalan Bütçe: " + remaining + " TL");
+        }
+
+        function renderL2Items() {
+            const grid = document.getElementById('l2-grid');
+            grid.innerHTML = '';
+            const cartTotal = l2_cart.reduce((sum, item) => sum + item.price, 0);
+            const remaining = l2_budget - cartTotal;
+
+            l2_current_shop_items.forEach((item, index) => {
+                const inCart = l2_cart.find(c => c.name === item.name); 
+                const btn = document.createElement('button');
+                const canAfford = (remaining >= item.price);
+                
+                let bgClass = inCart ? 'bg-green-100 border-green-500 ring-4 ring-green-200' : 'bg-white border-gray-200';
+                if(!inCart && !canAfford) bgClass = 'bg-gray-100 opacity-50 cursor-not-allowed';
+
+                btn.className = `relative p-2 rounded-xl border-2 flex flex-col items-center justify-between h-48 md:h-56 transition-all ${bgClass}`;
+                
+                btn.innerHTML = `
+                    <div class="h-24 md:h-32 w-full flex items-center justify-center overflow-hidden rounded-lg bg-gray-50 relative">
+                         <div class="emoji-fallback" style="font-size:50px;">${item.emoji}</div>
+                         <img src="${item.img}" class="w-full h-full object-cover relative z-10" onerror="this.style.display='none'">
+                    </div>
+                    <div class="font-bold text-xs md:text-sm text-center leading-tight mt-1">${item.name}</div>
+                    <div class="text-lg font-bold text-amber-600">${item.price} TL</div>
+                    ${inCart ? '<div class="absolute top-2 right-2 bg-green-500 text-white rounded-full p-1 shadow">✓</div>' : ''}
+                `;
+                
+                btn.onclick = () => {
+                    if(inCart) {
+                        l2_cart = l2_cart.filter(c => c.name !== item.name);
+                    } else {
+                        if(canAfford) {
+                            l2_cart.push(item);
+                            playSound('good');
+                            if(!item.isGood) {
+                                // Hafif sallanma efekti
+                                btn.style.transform = "translateX(5px)";
+                                setTimeout(()=> btn.style.transform = "translateX(0)", 100);
+                                copilotSay("EMİN MİSİN? BU ÜRÜN BİZİM DEĞİL GİBİ!", 2000);
+                            }
+                        } else {
+                            showToast("Paran Yetmiyor", "bad");
+                            playSound('bad');
+                        }
+                    }
+                    renderL2Items();
+                    updateL2UI();
+                };
+                grid.appendChild(btn);
+            });
+        }
+
+        function checkShopping() {
+            if(l2_cart.length === 0) { showToast("Sepetin Boş!", "bad"); return; }
+            const badChoices = l2_cart.filter(i => !i.isGood);
+            if(badChoices.length > 0) {
+                copilotSay("SEPETTE HATALAR VAR! HEMEN RAPORA BAK.", 3000);
+                const modal = document.getElementById('l2-report-modal');
+                const content = document.getElementById('l2-report-content');
+                content.innerHTML = '';
+                badChoices.forEach(item => {
+                    content.innerHTML += `
+                        <div class="flex items-center bg-red-50 p-4 rounded-lg border-l-4 border-red-500">
+                             <div class="text-4xl mr-4">${item.emoji}</div>
+                            <div>
+                                <h4 class="font-bold text-red-700">${item.name}</h4>
+                                <p class="text-sm text-red-600">Bu ürün yerli değil veya sağlığa zararlı olabilir.</p>
+                            </div>
+                        </div>`;
+                });
+                modal.style.display = 'flex';
+            } else finishLevel2();
+        }
+
+        function finishLevel2() {
+            let levelScore = 0;
+            l2_cart.forEach(item => item.isGood ? levelScore += 20 : levelScore -= 10);
+            const cartTotal = l2_cart.reduce((sum, item) => sum + item.price, 0);
+            if(l2_budget - cartTotal < 30 && l2_budget - cartTotal >= 0) levelScore += 15; 
+            updateScore(Math.max(0, levelScore));
+            document.getElementById('l2-report-modal').style.display = 'none';
+            showTransition("Bilinçli Tüketici!");
+        }
+
+        // --- LEVEL 3 (GECE MODU & EL FENERİ) ---
+        let l3_items_state = [];
+
+        function initLevel3() {
+            showScreen('screen-level3');
+            document.getElementById('l3-intro').style.display = 'flex';
+            document.getElementById('l3-fireflies').innerHTML = '';
+            l3_items_state = JSON.parse(JSON.stringify(DATA_POOL.l3));
+            
+            // Mouse/Touch Tracking for Flashlight
+            const screen = document.getElementById('screen-level3');
+            screen.addEventListener('mousemove', updateFlashlight);
+            screen.addEventListener('touchmove', updateFlashlight);
+
+            updateMission("AÇIKLARI BUL VE KAPAT", "Süre: 30sn");
+            updateL3UI();
+        }
+        
+        function updateFlashlight(e) {
+            const screen = document.getElementById('screen-level3');
+            const overlay = document.getElementById('l3-flashlight');
+            if(!overlay) return;
+            
+            let clientX = e.clientX;
+            let clientY = e.clientY;
+            if(e.touches && e.touches.length > 0) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            }
+            
+            const rect = screen.getBoundingClientRect();
+            const x = clientX - rect.left;
+            const y = clientY - rect.top;
+            
+            overlay.style.setProperty('--x', x + 'px');
+            overlay.style.setProperty('--y', y + 'px');
+        }
+
+        function updateL3UI() {
+             const wasteOn = l3_items_state.filter(i => i.type === 'waste' && i.isOn).length;
+             document.getElementById('l3-counter').innerText = wasteOn;
+             return wasteOn;
+        }
+
+        function startLevel3Action() {
+            document.getElementById('l3-intro').style.display = 'none';
+            renderL3Grid();
+            copilotSay("ELEKTRİKLER KESİLDİ! FENERİNİ KULLAN, AÇIKLARI BUL!", 4000);
+            let timeLeft = 30;
+            document.getElementById('l3-timer').innerText = timeLeft + " sn";
+            
+            const timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('l3-timer').innerText = timeLeft + " sn";
+                
+                const wasteOn = updateL3UI();
+
+                if(timeLeft <= 0) {
+                    clearAllTimers();
+                    if(wasteOn === 0) { 
+                        updateScore(50); 
+                        showTransition("Tasarruf Kahramanı!"); 
+                    } else if (wasteOn <= 2) {
+                        updateScore(20);
+                        showTransition("İdare Eder! Biraz açık kaldı.");
+                    } else {
+                        alert("Hala çok fazla açık cihaz var! Tekrar dene.");
+                        restartCurrentLevel();
+                    }
+                }
+            }, 1000);
+            gameState.intervals.push(timer);
+
+            // ATEŞ BÖCEĞİ (FIREFLY) BONUSU
+            const fireflyInt = setInterval(() => {
+                if(Math.random() > 0.6) spawnFirefly();
+            }, 4000);
+            gameState.intervals.push(fireflyInt);
+        }
+        
+        function spawnFirefly() {
+            const container = document.getElementById('l3-fireflies');
+            const el = document.createElement('div');
+            el.className = 'firefly';
+            el.innerText = '🐝';
+            
+            el.onpointerdown = (e) => {
+                e.stopPropagation(); // Butonlara tıklamayı engelleme
+                updateScore(30);
+                playSound('bonus');
+                showToast("IŞIK GELDİ! +30", "bonus");
+                
+                // 3 Saniye Işık Yak
+                document.body.classList.add('lights-on');
+                setTimeout(() => document.body.classList.remove('lights-on'), 3000);
+                el.remove();
+            };
+            
+            el.addEventListener('animationend', () => el.remove());
+            container.appendChild(el);
+        }
+
+        function renderL3Grid() {
+            const grid = document.getElementById('l3-grid');
+            grid.innerHTML = '';
+            l3_items_state.forEach(item => {
+                const btn = document.createElement('button');
+                // Görünüm: Açık cihazlar parlak (fener gelince), kapalılar sönük
+                let bgClass = item.isOn ? (item.type === 'essential' ? "bg-blue-200 border-blue-500 ring-4 ring-blue-300" : "bg-yellow-200 border-yellow-500 ring-4 ring-yellow-300") : "bg-slate-900 border-slate-700 opacity-80";
+                
+                btn.className = `p-2 rounded-xl flex flex-col items-center justify-center transition-all border-4 h-40 md:h-48 relative ${bgClass}`;
+                
+                btn.onclick = () => {
+                    if(item.type === 'essential' && item.isOn) {
+                        showToast("Kombi/Dolap Kapatılmaz!", "bad");
+                        playSound('bad');
+                        updateScore(-5);
+                        return;
+                    } 
+                    
+                    if(item.type === 'waste') {
+                        item.isOn = !item.isOn;
+                        if(!item.isOn) { 
+                            updateScore(10); 
+                            playSound('good'); 
+                            showToast("Kapattın!", "good");
+                        } else {
+                            updateScore(-5);
+                            playSound('bad');
+                        }
+                    }
+                    renderL3Grid();
+                    updateL3UI();
+                };
+                
+                btn.innerHTML = `
+                    <div class="text-6xl mb-2">${item.emoji}</div>
+                    <div class="font-bold text-slate-900 bg-white/90 px-2 py-1 rounded text-sm md:text-base shadow">${item.name}</div>
+                    <div class="absolute top-2 right-2 w-6 h-6 rounded-full border-2 border-white ${item.isOn ? 'bg-green-500 animate-pulse shadow-[0_0_10px_#22c55e]' : 'bg-red-500'}"></div>
+                `;
+                grid.appendChild(btn);
+            });
+        }
+
+        // --- LEVEL 4 (ZORLU FABRİKA) ---
+        let l4_count = 0;
+        let l4_spawn_speed = 2200; // Başlangıç hızı
+        let l4_move_speed = 0.15; // Bant hızı
+
+        function initLevel4() {
+            showScreen('screen-level4');
+            document.getElementById('l4-intro').style.display = 'flex';
+            document.getElementById('l4-belt').innerHTML = '';
+            l4_good_deck = shuffleArray(DATA_POOL.good);
+            l4_bad_deck = shuffleArray(DATA_POOL.bad);
+            l4_count = 0;
+            l4_spawn_speed = 2000;
+            l4_move_speed = 0.15;
+            updateMission("HATALI ÜRÜN AYIKLA", "Ayıklanan: 0");
+        }
+
+        function startLevel4Action() {
+            document.getElementById('l4-intro').style.display = 'none';
+            copilotSay("BANT HIZLANIYOR! DUMANA DİKKAT ET!", 4000);
+            let timeLeft = 40;
+            document.getElementById('l4-timer').innerText = timeLeft;
+
+            const timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('l4-timer').innerText = timeLeft;
+                
+                // Zorluk Artışı: Hızlanma
+                if(timeLeft % 10 === 0) {
+                    l4_spawn_speed = Math.max(800, l4_spawn_speed - 400); // Daha sık gelsin
+                    l4_move_speed += 0.05; // Daha hızlı aksın
+                    copilotSay("FABRİKA HIZLANDI! ACELE ET!", 2000);
+                }
+
+                if(timeLeft <= 0) { clearAllTimers(); showTransition("Üretim Tamamlandı!"); }
+            }, 1000);
+            gameState.intervals.push(timer);
+            
+            // DUMAN EFEKTİ (Her 12 saniyede bir)
+            const smokeInt = setInterval(() => {
+                 const smoke = document.getElementById('l4-smoke');
+                 smoke.style.display = 'flex';
+                 smoke.style.animation = 'none';
+                 smoke.offsetHeight; /* trigger reflow */
+                 smoke.style.animation = 'smokePass 4s linear forwards';
+                 playSound('bad'); // Uyarı sesi gibi kullan
+                 setTimeout(() => { smoke.style.display = 'none'; }, 4000);
+            }, 12000);
+            gameState.intervals.push(smokeInt);
+
+            // Dinamik Spawn Loop
+            function loopSpawn() {
+                spawnFactoryItem();
+                const next = setTimeout(loopSpawn, l4_spawn_speed);
+                gameState.timers.push(next);
+            }
+            loopSpawn();
+        }
+
+        function spawnFactoryItem() {
+            const container = document.getElementById('l4-belt');
+            const el = document.createElement('div');
+            
+            const isBonus = Math.random() < 0.05;
+            const isCorrect = Math.random() > 0.5;
+            
+            let itemData;
+            if(isBonus) {
+                itemData = DATA_POOL.bonus;
+                el.className = 'factory-item bonus-item';
+            } else {
+                if(isCorrect) {
+                    const res = getNextItem(l4_good_deck, DATA_POOL.good);
+                    itemData = res.item;
+                    l4_good_deck = res.newDeck;
+                    el.className = 'factory-item';
+                } else {
+                    const res = getNextItem(l4_bad_deck, DATA_POOL.bad);
+                    itemData = res.item;
+                    l4_bad_deck = res.newDeck;
+                    el.className = 'factory-item';
+                }
+            }
+
+            el.innerHTML = `
+                <div class="visual-container">
+                    <div class="emoji-fallback">${itemData.emoji}</div>
+                    <img src="${itemData.img}" 
+                         onerror="this.style.display='none';">
+                </div>
+                <span>${itemData.name}</span>
+            `;
+            
+            let posX = 100;
+            el.style.left = posX + '%';
+
+            const moveInt = setInterval(() => {
+                posX -= l4_move_speed; // Dinamik hız
+                el.style.left = posX + '%';
+                if(posX < -20) {
+                    clearInterval(moveInt);
+                    if(el.parentNode) el.remove();
+                }
+            }, 20);
+            
+            el.onpointerdown = function(e) {
+                e.preventDefault();
+                clearInterval(moveInt);
+                
+                if (isBonus) {
+                    updateScore(50);
+                    playSound('bonus');
+                    showToast("SÜPER! +50", 'bonus');
+                    el.style.transform = 'scale(0) rotate(360deg) transition: 0.5s';
+                    setTimeout(() => el.remove(), 500);
+                } else if(!isCorrect) {
+                    // Yabancı/Kötü ürünü eledik
+                    updateScore(15); 
+                    playSound('good'); 
+                    showToast("Yok Edildi", "good");
+                    l4_count++;
+                    updateMission("HATALI ÜRÜN AYIKLA", "Ayıklanan: " + l4_count);
+                    
+                    el.style.transform = 'scale(0) rotate(180deg) transition: 0.3s';
+                    setTimeout(() => el.remove(), 200);
+                } else {
+                    // Yerli ürüne dokunduk -> Hata
+                    updateScore(-10); updateLives(-1); playSound('bad'); showToast("Yerliye Dokunma!", "bad");
+                    copilotSay("DUR! O YERLİ MALI!", 2000);
+                    el.style.backgroundColor = 'red';
+                    setTimeout(() => el.remove(), 200);
+                }
+            };
+            
+            container.appendChild(el);
+        }
+
+        // --- LEVEL 5 ---
+        function initLevel5() { 
+            showScreen('screen-level5'); 
+            copilotSay("ŞİMDİ EN ÖNEMLİ AN! PUANLARINI GELECEĞİN İÇİN KULLAN.", 5000);
+            updateMission("YATIRIM YAP", "Doğru Seçimi Yap");
+        }
+        
+        function endGame(choice) {
+            showScreen('screen-end');
+            let title = "", desc = "", bonus = 0;
+            if(choice === 'kumbara') { title = "Tasarruf Ustası!"; desc = "Anadolu usulü birikimi seçtin. Ak akçe kara gün içindir."; bonus = Math.floor(gameState.score * 0.1); }
+            else if(choice === 'agac') { title = "Doğa Dostu!"; desc = "Geleceğe nefes oldun. Ağaçlar büyüyüp meyve verecek."; bonus = Math.floor(gameState.score * 0.3); }
+            else if(choice === 'kobi') { title = "Yerli Kahraman!"; desc = "Esnaf kazandı, ekonomi canlandı!"; bonus = Math.floor(gameState.score * 0.5); }
+            gameState.score += bonus;
+            document.getElementById('end-title').innerText = title;
+            document.getElementById('end-desc').innerText = desc;
+            document.getElementById('final-score-display').innerText = gameState.score;
+            playSound('good');
+            copilotSay("TEBRİKLER KAHRAMAN! SATUK BUĞRA SENİNLE GURUR DUYUYOR.", 6000);
+            updateMission("OYUN BİTTİ", "Tebrikler!");
+        }
+    </script>
+</body>
+</html>
