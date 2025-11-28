@@ -158,6 +158,15 @@
         .btn:active {
             transform: scale(0.95);
         }
+        
+        /* Barcode Styles */
+        .barcode-strip {
+            background-image: repeating-linear-gradient(90deg, #333 0, #333 2px, transparent 2px, transparent 4px);
+            height: 20px;
+            width: 100%;
+            opacity: 0.5;
+            margin-top: 2px;
+        }
 
         /* Co-Pilot Animation */
         @keyframes float {
@@ -261,6 +270,24 @@
             90% { opacity: 1; }
             100% { left: 110%; top: 40%; opacity: 0; }
         }
+        
+        /* LEVEL 4 FINISH LINE */
+        #l4-finish-line {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 20px; /* Görünür alanın sol tarafında */
+            width: 4px;
+            background: repeating-linear-gradient(
+              0deg,
+              #ef4444,
+              #ef4444 10px,
+              #ffffff 10px,
+              #ffffff 20px
+            );
+            z-index: 5;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+        }
 
         /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 8px; }
@@ -272,7 +299,7 @@
   "imports": {
     "react/": "https://aistudiocdn.com/react@^19.2.0/",
     "react": "https://aistudiocdn.com/react@^19.2.0",
-    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.554.0"
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.555.0"
   }
 }
 </script>
@@ -311,7 +338,7 @@
         <!-- MISSION BAR (GÖREV ÇUBUĞU) -->
         <div class="mission-bar w-full py-2 px-4 flex justify-center items-center gap-2 md:gap-4 text-xs md:text-base font-bold border-b-4 border-amber-600">
             <span class="bg-white/80 px-2 py-1 rounded shadow text-amber-900">🎯 GÖREV:</span>
-            <span id="mission-text" class="text-blue-900 uppercase">Yerli Malı Topla</span>
+            <span id="mission-text" class="text-blue-900 uppercase">Yerli ve Yararlı Mal Topla</span>
             <span class="text-amber-800">|</span>
             <span id="mission-progress" class="bg-blue-100 text-blue-800 px-2 py-1 rounded shadow">Kalan: 100</span>
         </div>
@@ -345,6 +372,12 @@
     <div id="screen-welcome" class="screen active-screen bg-slate-50">
         <div class="bg-white p-6 md:p-10 rounded-3xl shadow-2xl max-w-2xl text-center border-b-8 border-red-200 mx-4 w-full">
             
+            <!-- OKUL LOGOSU BURAYA -->
+            <div class="flex justify-center mb-6">
+                <!-- Buraya okul logosunu koyabilirsiniz -->
+                <!-- <img src="URL" class="h-24 md:h-32 object-contain drop-shadow-md"> -->
+            </div>
+
             <div class="mb-4">
                 <span class="bg-red-100 text-red-600 px-6 py-2 rounded-full font-bold text-lg">12-18 Aralık</span>
             </div>
@@ -362,9 +395,9 @@
     <!-- LEVEL 1: FALLING ITEMS -->
     <div id="screen-level1" class="screen bg-sky-100 overflow-hidden relative">
         <div id="l1-overlay" class="absolute inset-0 bg-black/70 z-40 flex flex-col items-center justify-center text-white text-center p-4">
-            <h2 class="text-3xl md:text-4xl font-bold mb-4">1. Bölüm: Yerli Malı Toplama</h2>
-            <p class="text-lg md:text-xl mb-4 max-w-lg">Yukarıdan düşen <span class="text-green-400 font-bold">YERLİ ve MİLLİ</span> ürünleri topla.</p>
-            <p class="text-md md:text-lg mb-8 text-gray-300">Yabancı ve zararlı ürünlere dokunma!<br><strong>İpucu:</strong> Mıknatısları kaçırma!</p>
+            <h2 class="text-3xl md:text-4xl font-bold mb-4">1. Bölüm: Yararlı ve Yerli Ürün Toplama</h2>
+            <p class="text-lg md:text-xl mb-4 max-w-lg">Yukarıdan düşen <span class="text-green-400 font-bold">YERLİ ve YARARLI</span> ürünleri topla.</p>
+            <p class="text-md md:text-lg mb-8 text-gray-300">Dikkat: Piller, çöpler veya yabancı ürünlere dokunma! (Piller yerli olsa bile doğaya zararlıdır)<br><strong>İpucu:</strong> Mıknatısları kaçırma!</p>
             <button onclick="startLevel1Action()" class="btn bg-blue-500 text-white px-10 py-4 rounded-xl text-2xl font-bold">BAŞLA</button>
         </div>
         
@@ -379,17 +412,17 @@
     <div id="screen-level2" class="screen bg-amber-50">
         <div id="l2-intro" class="absolute inset-0 bg-black/70 z-40 flex flex-col items-center justify-center text-white text-center p-4">
             <h2 class="text-3xl md:text-4xl font-bold mb-4">2. Bölüm: Tutumlu Alışveriş</h2>
-            <p class="text-lg md:text-xl mb-8 max-w-lg">Markettesin. Sepetine sadece <span class="text-green-400 font-bold">YERLİ, SAĞLIKLI ve GEREKLİ</span> ürünleri at.<br>Barkoduna (869) dikkat et!</p>
+            <p class="text-lg md:text-xl mb-8 max-w-lg">Markettesin. Sepetine sadece <span class="text-green-400 font-bold">YERLİ, SAĞLIKLI ve GEREKLİ</span> ürünleri at.<br><br><span class="text-yellow-400">YENİ ÖZELLİK:</span> Ürünün altındaki 🔍 simgesine tıkla ve barkodu gör! <strong>869</strong> ile başlamıyorsa yabancıdır.</p>
             <button onclick="startLevel2Action()" class="btn bg-amber-600 text-white px-10 py-4 rounded-xl text-2xl font-bold">ALIŞVERİŞE BAŞLA</button>
         </div>
 
         <div id="l2-report-modal" class="absolute inset-0 bg-black/80 z-50 hidden flex-col items-center justify-center p-4">
             <div class="bg-white w-full max-w-3xl rounded-2xl p-6 overflow-y-auto max-h-[90vh]">
                 <h3 class="text-2xl md:text-3xl font-bold text-red-600 mb-4 text-center">Alışveriş Raporu</h3>
-                <p class="text-center text-gray-600 mb-6">Satuk Buğra sepetini inceledi ve hatalar buldu:</p>
+                <p class="text-center text-gray-600 mb-6">Satuk Buğra sepetini inceledi:</p>
                 <div id="l2-report-content" class="space-y-4 mb-6"></div>
                 <div class="text-center">
-                    <button onclick="finishLevel2()" class="btn bg-green-600 text-white px-8 py-3 rounded-xl text-xl font-bold">Anladım, Devam Et ➡</button>
+                    <button onclick="nextLevel()" class="btn bg-green-600 text-white px-8 py-3 rounded-xl text-xl font-bold">Anladım, Devam Et ➡</button>
                 </div>
             </div>
         </div>
@@ -410,9 +443,9 @@
         <div id="l3-fireflies"></div> <!-- Ateş Böceği Katmanı -->
 
         <div id="l3-intro" class="absolute inset-0 bg-black/90 z-[60] flex flex-col items-center justify-center text-center p-4">
-            <h2 class="text-3xl md:text-4xl font-bold mb-4">3. Bölüm: Gece Nöbeti</h2>
-            <p class="text-lg md:text-xl mb-4 max-w-lg">Elektrikler kesildi ve oda karanlık!<br>Ama açık kalan cihazlar israf yapıyor.</p>
-            <p class="text-yellow-300 mb-8 font-bold">Fareyi/Parmağını fener gibi kullan, açık cihazları bul ve kapat!</p>
+            <h2 class="text-3xl md:text-4xl font-bold mb-4">3. Bölüm: Gece Devriyesi</h2>
+            <p class="text-lg md:text-xl mb-4 max-w-lg">Gece oldu, herkes uyudu ve oda karanlık!<br>Ama açık unutulan cihazlar boşa çalışıp israf yapıyor.</p>
+            <p class="text-yellow-300 mb-8 font-bold">Fenerinle (Fare/Parmak) dolaş, israf yapan cihazları bul ve kapat!</p>
             <div class="flex flex-col items-center gap-2 mb-4">
                  <div class="text-4xl">🐝</div>
                  <p class="text-sm">Ateş böceklerini yakalarsan ışık gelir!</p>
@@ -435,7 +468,7 @@
     <div id="screen-level4" class="screen bg-gray-100">
         <div id="l4-intro" class="absolute inset-0 bg-black/70 z-40 flex flex-col items-center justify-center text-white text-center p-4">
             <h2 class="text-3xl md:text-4xl font-bold mb-4">4. Bölüm: Zorlu Fabrika</h2>
-            <p class="text-lg md:text-xl mb-8 max-w-lg">Bant gittikçe <span class="text-red-500 font-bold">HIZLANACAK!</span><br>Arada duman çıkabilir, dikkatli ol.<br>Hatalı ürünleri yok et, yerlilere dokunma.</p>
+            <p class="text-lg md:text-xl mb-8 max-w-lg">Banttan geçen <span class="text-red-500 font-bold">YABANCI veya ZARARLI</span> ürünleri tıkla ve yok et!<br><br>⚠️ <strong>DİKKAT:</strong> Zararlı ürünleri kaçırırsan CAN kaybedersin!<br>Yerli (Faydalı) ürünlere dokunma.</p>
             <button onclick="startLevel4Action()" class="btn bg-orange-500 text-white px-10 py-4 rounded-xl text-2xl font-bold">ÜRETİMİ BAŞLAT</button>
         </div>
 
@@ -445,14 +478,18 @@
 
         <div class="w-full h-64 md:h-80 bg-slate-700 relative mt-32 flex items-center border-y-8 border-slate-600 overflow-hidden shadow-2xl">
             <div class="absolute inset-0 opacity-20" style="background-image: repeating-linear-gradient(90deg, transparent, transparent 50px, #000 50px, #000 55px);"></div>
-            <div id="l4-belt" class="w-full h-full relative"></div>
+            <div id="l4-belt" class="w-full h-full relative">
+                <!-- FINISH LINE (GÜVENLİK ŞERİDİ) -->
+                <div id="l4-finish-line" title="Güvenlik Hattı"></div>
+            </div>
             <!-- DUMAN EFEKTİ -->
             <div id="l4-smoke" class="smoke-overlay">DİKKAT! DUMAN ALTI!</div>
         </div>
 
         <div class="mt-10 text-center opacity-50">
             <div class="text-6xl mb-2">🗑️</div>
-            <p class="text-xl font-bold text-gray-500">Hatalıları Tıkla ve Yok Et</p>
+            <p class="text-xl font-bold text-gray-500">Zararlı/Yabancı Ürünleri Yok Et</p>
+            <p class="text-sm font-bold text-red-500">Kırmızı çizgiyi geçerse ceza yersin!</p>
         </div>
     </div>
 
@@ -511,59 +548,77 @@
         // --- HİBRİT VERİ HAVUZU ---
         const DATA_POOL = {
             good: [
-                { name: "SİMİT", img: "https://upload.wikimedia.org/wikipedia/commons/c/c8/Simit.jpg", emoji: "🥯" },
-                { name: "ÇAY", img: "https://upload.wikimedia.org/wikipedia/commons/5/5c/Turkish_tea.jpg", emoji: "☕" },
-                { name: "KESTANE", img: "https://upload.wikimedia.org/wikipedia/commons/2/2c/Chestnut.jpg", emoji: "🌰" },
-                { name: "İNCİR", img: "https://upload.wikimedia.org/wikipedia/commons/4/4c/Figs.jpg", emoji: "🟣" },
-                { name: "ELMA", img: "https://upload.wikimedia.org/wikipedia/commons/1/15/Red_Apple.jpg", emoji: "🍎" },
-                { name: "FINDIK", img: "https://upload.wikimedia.org/wikipedia/commons/3/31/Hazelnuts.jpg", emoji: "🥜" },
-                { name: "ZEYTİN", img: "https://upload.wikimedia.org/wikipedia/commons/a/a3/Black_Olives.jpg", emoji: "🫒" },
-                { name: "SÜT", img: "https://upload.wikimedia.org/wikipedia/commons/a/a5/Glass_of_Milk.jpg", emoji: "🥛" },
-                { name: "EKMEK", img: "https://upload.wikimedia.org/wikipedia/commons/d/d1/Bread.jpg", emoji: "🍞" },
-                { name: "YOĞURT", img: "https://upload.wikimedia.org/wikipedia/commons/9/9e/Yogurt.jpg", emoji: "🥣" },
-                { name: "KARPUZ", img: "https://upload.wikimedia.org/wikipedia/commons/e/ea/Watermelon.jpg", emoji: "🍉" },
-                { name: "LAHMACUN", img: "https://upload.wikimedia.org/wikipedia/commons/c/c7/Lahmacun.jpg", emoji: "🥙" },
-                { name: "BAKLAVA", img: "https://upload.wikimedia.org/wikipedia/commons/c/c3/Baklava_-_Turkish_speciality.jpg", emoji: "🥧" },
-                { name: "TÜRK BAYRAĞI", img: "https://upload.wikimedia.org/wikipedia/commons/b/b4/Flag_of_Turkey.svg", emoji: "🇹🇷" },
-                { name: "SUCUK", img: "https://upload.wikimedia.org/wikipedia/commons/0/08/Sucuk.jpg", emoji: "🥩" }
+                { name: "SİMİT", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Simit_2.jpg/640px-Simit_2.jpg", emoji: "🥯" },
+                { name: "ÇAY", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Turkish_tea.jpg/640px-Turkish_tea.jpg", emoji: "☕" },
+                { name: "KESTANE", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Chestnut.jpg/640px-Chestnut.jpg", emoji: "🌰" },
+                { name: "İNCİR", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Figs.jpg/640px-Figs.jpg", emoji: "🟣" },
+                { name: "ELMA", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Red_Apple.jpg/640px-Red_Apple.jpg", emoji: "🍎" },
+                { name: "FINDIK", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Hazelnuts.jpg/640px-Hazelnuts.jpg", emoji: "🥜" },
+                { name: "ZEYTİN", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Black_Olives.jpg/640px-Black_Olives.jpg", emoji: "🫒" },
+                { name: "SÜT", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Glass_of_Milk.jpg/640px-Glass_of_Milk.jpg", emoji: "🥛" },
+                { name: "EKMEK", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Bread.jpg/640px-Bread.jpg", emoji: "🍞" },
+                { name: "YOĞURT", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Yogurt.jpg/640px-Yogurt.jpg", emoji: "🥣" },
+                { name: "KARPUZ", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Watermelon.jpg/640px-Watermelon.jpg", emoji: "🍉" },
+                { name: "LAHMACUN", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Lahmacun.jpg/640px-Lahmacun.jpg", emoji: "🥙" },
+                { name: "BAKLAVA", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Baklava_-_Turkish_speciality.jpg/640px-Baklava_-_Turkish_speciality.jpg", emoji: "🥧" },
+                { name: "TÜRK BAYRAĞI", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Flag_of_Turkey.svg/640px-Flag_of_Turkey.svg.png", emoji: "🇹🇷" },
+                { name: "SUCUK", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Sucuk.jpg/640px-Sucuk.jpg", emoji: "🥩" },
+                // YENİ EKLENEN YARARLI ÜRÜNLER
+                { name: "ISPANAK", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Spinach.jpg/640px-Spinach.jpg", emoji: "🥬" },
+                { name: "MARUL", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Lettuce_mix.jpg/640px-Lettuce_mix.jpg", emoji: "🥗" },
+                { name: "AYVA", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Quince.jpg/640px-Quince.jpg", emoji: "🍐" },
+                { name: "ÜZÜM", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Abhar-grap.jpg/640px-Abhar-grap.jpg", emoji: "🍇" },
+                { name: "HÖŞMERİM", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/H%C3%B6%C5%9Fmerim.jpg/640px-H%C3%B6%C5%9Fmerim.jpg", emoji: "🍮" }
             ],
             bad: [
-                { name: "KOLA", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/15-09-26-RalfR-WLC-0098.jpg/640px-15-09-26-RalfR-WLC-0098.jpg", emoji: "🥤" },
-                { name: "CİPS", img: "https://upload.wikimedia.org/wikipedia/commons/6/69/Potato-Chips.jpg", emoji: "🍟" },
-                { name: "HAMBURGER", img: "https://upload.wikimedia.org/wikipedia/commons/4/47/Hamburger.jpg", emoji: "🍔" },
-                { name: "PİL", img: "https://upload.wikimedia.org/wikipedia/commons/e/ea/Batteries.jpg", emoji: "🔋" },
-                { name: "ŞEKER", img: "https://upload.wikimedia.org/wikipedia/commons/e/e3/Bonbons.jpg", emoji: "🍬" },
-                { name: "OYUNCAK", img: "https://upload.wikimedia.org/wikipedia/commons/5/5d/Lego_bricks.jpg", emoji: "🤖" },
-                { name: "DONDURMA", img: "https://upload.wikimedia.org/wikipedia/commons/3/31/Ice_Cream_dessert_02.jpg", emoji: "🍦" },
-                { name: "SOSİS", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Roasted_sausages.jpg/640px-Roasted_sausages.jpg", emoji: "🌭" }
+                { name: "KOLA", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Coca_Cola_glass.jpg/480px-Coca_Cola_glass.jpg", emoji: "🥤" },
+                { name: "CİPS", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Potato-Chips.jpg/640px-Potato-Chips.jpg", emoji: "🍟" },
+                { name: "HAMBURGER", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Hamburger.jpg/640px-Hamburger.jpg", emoji: "🍔" },
+                { name: "PİL (ATIK)", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Batteries.jpg/640px-Batteries.jpg", emoji: "🔋" },
+                { name: "ŞEKER", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Bonbons.jpg/640px-Bonbons.jpg", emoji: "🍬" },
+                { name: "OYUNCAK", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Lego_bricks.jpg/640px-Lego_bricks.jpg", emoji: "🤖" },
+                { name: "DONDURMA", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Ice_Cream_dessert_02.jpg/640px-Ice_Cream_dessert_02.jpg", emoji: "🍦" },
+                { name: "SOSİS", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Roasted_sausages.jpg/640px-Roasted_sausages.jpg", emoji: "🌭" },
+                // YENİ EKLENEN ZARARLI ÜRÜNLER
+                { name: "ENERJİ İÇECEĞİ", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Energy_drink_can.jpg/640px-Energy_drink_can.jpg", emoji: "⚡" },
+                { name: "JELİBON", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Gummy_bears.jpg/640px-Gummy_bears.jpg", emoji: "🧸" },
+                { name: "NOODLE", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Fried_noodles.jpg/640px-Fried_noodles.jpg", emoji: "🍜" },
+                { name: "NUGGET", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Chicken_Nuggets.jpg/640px-Chicken_Nuggets.jpg", emoji: "🍗" },
+                { name: "ŞEKERLEME", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Lollipops.jpg/640px-Lollipops.jpg", emoji: "🍭" }
             ],
             l3: [
-                { id: 1, name: 'Boş Işık', type: 'waste', img: '', emoji: '💡', isOn: true, room: 'Oda' },
-                { id: 2, name: 'Musluk', type: 'waste', img: '', emoji: '🚰', isOn: true, room: 'Banyo' },
-                { id: 3, name: 'TV', type: 'waste', img: '', emoji: '📺', isOn: true, room: 'Salon' },
-                { id: 4, name: 'Kombi', type: 'essential', img: '', emoji: '🔥', isOn: true, room: 'Koridor' },
-                { id: 5, name: 'Buzdolabı', type: 'essential', img: '', emoji: '❄️', isOn: true, room: 'Mutfak' },
-                { id: 6, name: 'PC', type: 'waste', img: '', emoji: '💻', isOn: true, room: 'Oda' },
-                { id: 7, name: 'Oda Işığı', type: 'waste', img: '', emoji: '💡', isOn: true, room: 'Oda' },
-                { id: 8, name: 'Radyo', type: 'waste', img: '', emoji: '📻', isOn: true, room: 'Mutfak' }
+                { id: 1, name: 'Boş Işık', type: 'waste', emoji: '💡', isOn: true, room: 'Oda' },
+                { id: 2, name: 'Musluk', type: 'waste', emoji: '🚰', isOn: true, room: 'Banyo' },
+                { id: 3, name: 'TV', type: 'waste', emoji: '📺', isOn: true, room: 'Salon' },
+                { id: 4, name: 'Kombi', type: 'essential', emoji: '🔥', isOn: true, room: 'Koridor' },
+                { id: 5, name: 'Buzdolabı', type: 'essential', emoji: '❄️', isOn: true, room: 'Mutfak' },
+                { id: 6, name: 'PC', type: 'waste', emoji: '💻', isOn: true, room: 'Oda' },
+                { id: 7, name: 'Oda Işığı', type: 'waste', emoji: '💡', isOn: true, room: 'Oda' },
+                { id: 8, name: 'Radyo', type: 'waste', emoji: '📻', isOn: true, room: 'Mutfak' }
             ],
-            bonus: { name: "BOR MADENİ", img: "https://upload.wikimedia.org/wikipedia/commons/9/91/Boron_R105.jpg", emoji: "💎" },
-            magnet: { name: "MIKNATIS", img: "", emoji: "🧲" }
+            bonus: { name: "BOR MADENİ", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Boron_R105.jpg/640px-Boron_R105.jpg", emoji: "💎" },
+            magnet: { name: "MIKNATIS", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Horseshoe_Magnet.jpg/640px-Horseshoe_Magnet.jpg", emoji: "🧲" }
         };
 
         const CO_QUOTES = [
-            "BARKOD NUMARASI 869 İLE BAŞLAYAN ÜRÜN TÜRK MALIDIR!",
+            "YERLİ ÜRET, YERLİ TÜKET.",
+            "TUTUMLU OL, GELECEĞE GÜVENLE BAK.",
+            "YERLİ MALI, ÜLKENİN CAN DAMARI.",
+            "BUGÜNÜN BİRİKİMİ, YARININ GÜVENCESİ.",
+            "869: ÜLKENİN GÜCÜ, SENİN TERCİHİN.",
+            "YABANCIYA HAYRAN OLMA, ÖZ MALINA SAHİP ÇIK.",
+            "DAMLAYA DAMLAYA GÖL, KULLANA KULLANA ÇÖL OLUR.",
+            "ÜRETEN TÜRKİYE, GÜÇLÜ GELECEK.",
+            "PARANI SAVURMA, GELECEĞİNİ KUR.",
+            "YERLİ MALI AL, PARAN ÜLKENDE KALSIN.",
+            "EN BÜYÜK ZENGİNLİK, TASARRUFTUR.",
+            "İŞTEN ARTMAZ, DİŞTEN ARTAR.",
+            "YERLİ MALI KULLANMAK, VATANA HİZMETTİR.",
+            "IŞIĞI BOŞA YAKMA, GELECEĞİNİ KARARTMA.",
+            "AK AKÇE KARA GÜN İÇİNDİR.",
             "YERLİ MALI YURDUN MALI, HERKES ONU KULLANMALI!",
-            "PARAMIZI ÇARÇUR ETMEYELİM, KUMBARAYA ATALIM!",
-            "ÜLKEMİZİN KAZANMASI İÇİN YERLİ ÜRETİCİYE DESTEK OL!",
-            "ENERJİ TASARRUFU GELECEĞİMİZ İÇİN ÇOK ÖNEMLİDİR.",
-            "AÇIK KALAN IŞIKLARI KAPATALIM, DOĞAYI KORUYALIM.",
-            "SAĞLIKLI OLMAK İÇİN KOLA DEĞİL, AYRAN İÇMELİSİN!",
-            "CİPS YERİNE FINDIK, CEVİZ YEMELİSİN KAHRAMAN!",
-            "TUTUMLU OLMAK CİMRİLİK DEĞİLDİR, AKILLILIKTIR!",
-            "DAMLAYA DAMLAYA GÖL OLUR, UNUTMA!",
-            "İSRAF ETMEK YOK! YİYEBİLECEĞİN KADAR AL.",
-            "BU TOPRAKLARDA YETİŞEN ÜRÜNLER EN GÜZELİDİR!"
+            "PİL GİBİ ATIKLAR DOĞAYI KİRLETİR, ONLARI ALMA!",
+            "BARKOD NUMARASI 869 İLE BAŞLAYAN ÜRÜN TÜRK MALIDIR!"
         ];
 
         let l1_good_deck = [];
@@ -630,7 +685,7 @@
             copilotInterval = setInterval(() => {
                 const quote = CO_QUOTES[Math.floor(Math.random() * CO_QUOTES.length)];
                 copilotSay(quote);
-            }, 8000);
+            }, 6000); // Daha sık konuşsun (6 saniye)
         }
 
         function playSound(type) {
@@ -750,6 +805,7 @@
 
         function nextLevel() {
             document.getElementById('transition-modal').style.display = 'none';
+            document.getElementById('l2-report-modal').style.display = 'none'; // Close Level 2 report if open
             gameState.level++;
             
             if(gameState.level === 2) initLevel2();
@@ -759,7 +815,11 @@
         }
 
         function startGame() {
-            playMusic(); 
+            const audio = document.getElementById('bg-music');
+            if (audio) {
+                audio.currentTime = 0;
+                playMusic();
+            }
             gameState.score = 0;
             gameState.level = 1;
             gameState.lives = 3;
@@ -775,13 +835,13 @@
             document.getElementById('l1-game-area').innerHTML = '';
             l1_good_deck = shuffleArray(DATA_POOL.good);
             l1_bad_deck = shuffleArray(DATA_POOL.bad);
-            updateMission("YERLİ MALI TOPLA", "Kalan Hedef: 100 Puan");
+            updateMission("YERLİ VE YARARLI TOPLA", "Kalan Hedef: 100 Puan");
         }
 
         function startLevel1Action() {
             playMusic();
             document.getElementById('l1-overlay').style.display = 'none';
-            copilotSay("HAYDİ BAKALIM! SADECE YERLİ ÜRÜNLERİ TOPLA!", 4000);
+            copilotSay("HAYDİ BAKALIM! SADECE YERLİ VE YARARLI ÜRÜNLERİ TOPLA!", 4000);
             let timeLeft = 40; 
             const timerEl = document.getElementById('l1-timer');
             timerEl.innerText = timeLeft;
@@ -904,7 +964,7 @@
                 }
 
                 const remaining = Math.max(0, 100 - gameState.score);
-                updateMission("YERLİ MALI TOPLA", "Kalan Hedef: " + remaining + " Puan");
+                updateMission("YERLİ VE YARARLI TOPLA", "Kalan Hedef: " + remaining + " Puan");
                 
                 if(gameState.level === 1 && gameState.score >= 100) {
                     setTimeout(() => {
@@ -935,8 +995,21 @@
             
             const shuffledGood = shuffleArray(DATA_POOL.good).slice(0, 12);
             const shuffledBad = shuffleArray(DATA_POOL.bad).slice(0, 8);
-            let combined = [...shuffledGood.map(i => ({...i, isGood: true, price: Math.floor(Math.random()*20)+5})), 
-                           ...shuffledBad.map(i => ({...i, isGood: false, price: Math.floor(Math.random()*20)+15}))];
+            
+            // YERLİ AMA ZARARLI (869 Tuzağı) mantığını kuralım
+            // İyi ürünler zaten Yerli (869) ve İyi
+            // Kötü ürünler: Bazıları 869 (Yerli Zararlı), Bazıları Yabancı (Zararlı)
+            
+            let combined = [
+                ...shuffledGood.map(i => ({...i, isGood: true, price: Math.floor(Math.random()*20)+5, barcodePrefix: "869"})), 
+                ...shuffledBad.map(i => {
+                    // %50 ihtimalle yerli barkodu olsun ama kötü ürün
+                    let isDomesticTrap = Math.random() > 0.5; 
+                    let prefix = isDomesticTrap ? "869" : (Math.floor(Math.random() * 800 + 100)).toString();
+                    return {...i, isGood: false, price: Math.floor(Math.random()*20)+15, barcodePrefix: prefix, isTrap: isDomesticTrap };
+                })
+            ];
+            
             l2_current_shop_items = shuffleArray(combined);
 
             renderL2Items();
@@ -946,7 +1019,7 @@
 
         function startLevel2Action() {
             document.getElementById('l2-intro').style.display = 'none';
-            copilotSay("869 İLE BAŞLAYAN BARKODLARI BUL! YABANCI ALMA.", 4000);
+            copilotSay("BARKODA DİKKAT ET! 869 YERLİDİR AMA HER YERLİ SAĞLIKLI OLMAYABİLİR!", 5000);
         }
 
         function updateL2UI() {
@@ -965,24 +1038,36 @@
 
             l2_current_shop_items.forEach((item, index) => {
                 const inCart = l2_cart.find(c => c.name === item.name); 
-                const btn = document.createElement('button');
+                const btn = document.createElement('div'); // Button değil div yapıyoruz ki içi tıklanabilir olsun
                 const canAfford = (remaining >= item.price);
                 
                 let bgClass = inCart ? 'bg-green-100 border-green-500 ring-4 ring-green-200' : 'bg-white border-gray-200';
                 if(!inCart && !canAfford) bgClass = 'bg-gray-100 opacity-50 cursor-not-allowed';
 
-                btn.className = `relative p-2 rounded-xl border-2 flex flex-col items-center justify-between h-48 md:h-56 transition-all ${bgClass}`;
+                // Barkod Oluşturma
+                const fullBarcode = item.barcodePrefix + Math.floor(100000 + Math.random() * 900000);
+
+                btn.className = `relative p-2 rounded-xl border-2 flex flex-col items-center justify-between h-56 md:h-64 transition-all ${bgClass} cursor-pointer hover:shadow-xl`;
                 
                 btn.innerHTML = `
-                    <div class="h-24 md:h-32 w-full flex items-center justify-center overflow-hidden rounded-lg bg-gray-50 relative">
+                    <div class="h-24 md:h-28 w-full flex items-center justify-center overflow-hidden rounded-lg bg-gray-50 relative pointer-events-none">
                          <div class="emoji-fallback" style="font-size:50px;">${item.emoji}</div>
                          <img src="${item.img}" class="w-full h-full object-cover relative z-10" onerror="this.style.display='none'">
                     </div>
-                    <div class="font-bold text-xs md:text-sm text-center leading-tight mt-1">${item.name}</div>
-                    <div class="text-lg font-bold text-amber-600">${item.price} TL</div>
-                    ${inCart ? '<div class="absolute top-2 right-2 bg-green-500 text-white rounded-full p-1 shadow">✓</div>' : ''}
+                    <div class="font-bold text-xs md:text-sm text-center leading-tight mt-1 pointer-events-none">${item.name}</div>
+                    <div class="text-lg font-bold text-amber-600 pointer-events-none">${item.price} TL</div>
+                    
+                    <!-- BARKOD ALANI -->
+                    <div class="w-full mt-1">
+                        <button onclick="event.stopPropagation(); this.innerText='${fullBarcode}'; this.style.background='#333'; this.style.color='#fff';" class="w-full bg-gray-200 text-gray-700 text-xs py-1 rounded font-mono font-bold hover:bg-gray-300">
+                           🔍 ||| BARKOD |||
+                        </button>
+                    </div>
+
+                    ${inCart ? '<div class="absolute top-2 right-2 bg-green-500 text-white rounded-full p-1 shadow pointer-events-none">✓</div>' : ''}
                 `;
                 
+                // Ana Tıklama (Sepete Ekle)
                 btn.onclick = () => {
                     if(inCart) {
                         l2_cart = l2_cart.filter(c => c.name !== item.name);
@@ -991,10 +1076,14 @@
                             l2_cart.push(item);
                             playSound('good');
                             if(!item.isGood) {
-                                // Hafif sallanma efekti
+                                // Kötü seçim
                                 btn.style.transform = "translateX(5px)";
                                 setTimeout(()=> btn.style.transform = "translateX(0)", 100);
-                                copilotSay("EMİN MİSİN? BU ÜRÜN BİZİM DEĞİL GİBİ!", 2000);
+                                if(item.isTrap) {
+                                    copilotSay("DİKKAT! BARKOD 869 AMA BU ÜRÜN SAĞLIKLI DEĞİL!", 2500);
+                                } else {
+                                    copilotSay("BU ÜRÜN YABANCI GİBİ DURUYOR!", 2000);
+                                }
                             }
                         } else {
                             showToast("Paran Yetmiyor", "bad");
@@ -1007,37 +1096,44 @@
                 grid.appendChild(btn);
             });
         }
-
+        
         function checkShopping() {
-            if(l2_cart.length === 0) { showToast("Sepetin Boş!", "bad"); return; }
-            const badChoices = l2_cart.filter(i => !i.isGood);
-            if(badChoices.length > 0) {
-                copilotSay("SEPETTE HATALAR VAR! HEMEN RAPORA BAK.", 3000);
-                const modal = document.getElementById('l2-report-modal');
-                const content = document.getElementById('l2-report-content');
-                content.innerHTML = '';
-                badChoices.forEach(item => {
-                    content.innerHTML += `
-                        <div class="flex items-center bg-red-50 p-4 rounded-lg border-l-4 border-red-500">
-                             <div class="text-4xl mr-4">${item.emoji}</div>
-                            <div>
-                                <h4 class="font-bold text-red-700">${item.name}</h4>
-                                <p class="text-sm text-red-600">Bu ürün yerli değil veya sağlığa zararlı olabilir.</p>
-                            </div>
-                        </div>`;
-                });
-                modal.style.display = 'flex';
-            } else finishLevel2();
-        }
+            // "KASAYA GİT" Butonuna tıklandığında çalışır
+            let correctCount = 0;
+            let wrongCount = 0;
+            let scoreAdd = 0;
+            let reportHTML = "";
 
-        function finishLevel2() {
-            let levelScore = 0;
-            l2_cart.forEach(item => item.isGood ? levelScore += 20 : levelScore -= 10);
+            l2_cart.forEach(item => {
+                if(item.isGood) {
+                    correctCount++;
+                    scoreAdd += 10;
+                    reportHTML += `<div class='text-green-600 font-bold'>✅ ${item.name}: Doğru seçim! (+10 Puan)</div>`;
+                } else {
+                    wrongCount++;
+                    scoreAdd -= 5;
+                    let reason = item.isTrap ? "Yerli barkodlu (869) ama zararlı!" : "Yabancı veya zararlı ürün.";
+                    reportHTML += `<div class='text-red-600 font-bold'>❌ ${item.name}: ${reason} (-5 Puan)</div>`;
+                }
+            });
+
+            // Bütçe artanı bonusu
             const cartTotal = l2_cart.reduce((sum, item) => sum + item.price, 0);
-            if(l2_budget - cartTotal < 30 && l2_budget - cartTotal >= 0) levelScore += 15; 
-            updateScore(Math.max(0, levelScore));
-            document.getElementById('l2-report-modal').style.display = 'none';
-            showTransition("Bilinçli Tüketici!");
+            const remaining = l2_budget - cartTotal;
+            if(remaining > 0 && remaining < 20 && wrongCount === 0) {
+                scoreAdd += 10;
+                reportHTML += `<div class='text-blue-600 font-bold mt-2'>💰 Bütçeyi iyi yönettin! (+10 Bonus)</div>`;
+            }
+
+            if(l2_cart.length === 0) {
+                alert("Sepetin boş! Bir şeyler almalısın.");
+                return;
+            }
+
+            updateScore(scoreAdd);
+            
+            document.getElementById('l2-report-content').innerHTML = reportHTML;
+            document.getElementById('l2-report-modal').style.display = 'flex';
         }
 
         // --- LEVEL 3 (GECE MODU & EL FENERİ) ---
@@ -1047,7 +1143,8 @@
             showScreen('screen-level3');
             document.getElementById('l3-intro').style.display = 'flex';
             document.getElementById('l3-fireflies').innerHTML = '';
-            l3_items_state = JSON.parse(JSON.stringify(DATA_POOL.l3));
+            // Karıştırarak Başlat (Randomize Positions)
+            l3_items_state = shuffleArray(JSON.parse(JSON.stringify(DATA_POOL.l3)));
             
             // Mouse/Touch Tracking for Flashlight
             const screen = document.getElementById('screen-level3');
@@ -1087,7 +1184,7 @@
         function startLevel3Action() {
             document.getElementById('l3-intro').style.display = 'none';
             renderL3Grid();
-            copilotSay("ELEKTRİKLER KESİLDİ! FENERİNİ KULLAN, AÇIKLARI BUL!", 4000);
+            copilotSay("HERKES UYUDU AMA CİHAZLAR AÇIK! BUL VE KAPAT!", 4000);
             let timeLeft = 30;
             document.getElementById('l3-timer').innerText = timeLeft + " sn";
             
@@ -1095,6 +1192,7 @@
                 timeLeft--;
                 document.getElementById('l3-timer').innerText = timeLeft + " sn";
                 
+                // Check if already completed (double check)
                 const wasteOn = updateL3UI();
 
                 if(timeLeft <= 0) {
@@ -1150,7 +1248,7 @@
                 // Görünüm: Açık cihazlar parlak (fener gelince), kapalılar sönük
                 let bgClass = item.isOn ? (item.type === 'essential' ? "bg-blue-200 border-blue-500 ring-4 ring-blue-300" : "bg-yellow-200 border-yellow-500 ring-4 ring-yellow-300") : "bg-slate-900 border-slate-700 opacity-80";
                 
-                btn.className = `p-2 rounded-xl flex flex-col items-center justify-center transition-all border-4 h-40 md:h-48 relative ${bgClass}`;
+                btn.className = `p-2 rounded-xl flex flex-col items-center justify-center transition-all border-4 h-40 md:h-48 relative ${bgClass} overflow-hidden`;
                 
                 btn.onclick = () => {
                     if(item.type === 'essential' && item.isOn) {
@@ -1173,12 +1271,25 @@
                     }
                     renderL3Grid();
                     updateL3UI();
+                    
+                    // ERKEN BİTİRME KONTROLÜ
+                    const wasteOn = l3_items_state.filter(i => i.type === 'waste' && i.isOn).length;
+                    if(wasteOn === 0) {
+                        setTimeout(() => {
+                            clearAllTimers();
+                            updateScore(30); // Erken bitirme bonusu
+                            showTransition("Tasarruf Kahramanı! Harika İş.");
+                        }, 500);
+                    }
                 };
                 
+                // Resimsiz, Sadece Emoji
                 btn.innerHTML = `
-                    <div class="text-6xl mb-2">${item.emoji}</div>
-                    <div class="font-bold text-slate-900 bg-white/90 px-2 py-1 rounded text-sm md:text-base shadow">${item.name}</div>
-                    <div class="absolute top-2 right-2 w-6 h-6 rounded-full border-2 border-white ${item.isOn ? 'bg-green-500 animate-pulse shadow-[0_0_10px_#22c55e]' : 'bg-red-500'}"></div>
+                    <div class="h-24 w-full flex items-center justify-center relative mb-2">
+                        <div class="text-7xl drop-shadow-md">${item.emoji}</div>
+                    </div>
+                    <div class="font-bold text-slate-900 bg-white/90 px-2 py-1 rounded text-sm md:text-base shadow z-20">${item.name}</div>
+                    <div class="absolute top-2 right-2 w-6 h-6 rounded-full border-2 border-white ${item.isOn ? 'bg-green-500 animate-pulse shadow-[0_0_10px_#22c55e]' : 'bg-red-500'} z-20"></div>
                 `;
                 grid.appendChild(btn);
             });
@@ -1192,13 +1303,13 @@
         function initLevel4() {
             showScreen('screen-level4');
             document.getElementById('l4-intro').style.display = 'flex';
-            document.getElementById('l4-belt').innerHTML = '';
+            document.getElementById('l4-belt').innerHTML = `<!-- FINISH LINE (GÜVENLİK ŞERİDİ) --><div id="l4-finish-line" title="Güvenlik Hattı"></div>`;
             l4_good_deck = shuffleArray(DATA_POOL.good);
             l4_bad_deck = shuffleArray(DATA_POOL.bad);
             l4_count = 0;
             l4_spawn_speed = 2000;
             l4_move_speed = 0.15;
-            updateMission("HATALI ÜRÜN AYIKLA", "Ayıklanan: 0");
+            updateMission("ZARARLI ÜRÜN YOK ET", "Ayıklanan: 0");
         }
 
         function startLevel4Action() {
@@ -1283,10 +1394,36 @@
             const moveInt = setInterval(() => {
                 posX -= l4_move_speed; // Dinamik hız
                 el.style.left = posX + '%';
-                if(posX < -20) {
+                
+                // --- PİKSEL TABANLI HASSAS BİTİŞ KONTROLÜ ---
+                const belt = document.getElementById('l4-belt');
+                const line = document.getElementById('l4-finish-line');
+                
+                // Eğer referanslar varsa (oyun devam ediyorsa)
+                if(belt && line && el && document.body.contains(el)) {
+                     const itemRect = el.getBoundingClientRect();
+                     const lineRect = line.getBoundingClientRect();
+                     
+                     // Eğer ürünün SAĞ kenarı, çizginin SOL kenarını geçtiyse (Tamamen çizginin soluna geçtiyse)
+                     if(itemRect.right < lineRect.left) {
+                          clearInterval(moveInt);
+                          if(el.parentNode) el.remove();
+                          
+                          // --- CEZA MANTIĞI: ZARARLI ÜRÜN ÇİZGİYİ GEÇTİ ---
+                          if(!isBonus && !isCorrect) {
+                              updateScore(-5);
+                              updateLives(-1);
+                              playSound('bad');
+                              showToast("Zararlı Ürün Kaçtı! -1 Can", "bad");
+                              copilotSay("OLAMAZ! ZARARLI ÜRÜN BANTTAN GEÇTİ!", 1500);
+                          }
+                     }
+                } else if (posX < -20) {
+                    // Fallback (eğer rect okunamadıysa, çok sola gittiyse sil)
                     clearInterval(moveInt);
                     if(el.parentNode) el.remove();
                 }
+
             }, 20);
             
             el.onpointerdown = function(e) {
@@ -1305,7 +1442,7 @@
                     playSound('good'); 
                     showToast("Yok Edildi", "good");
                     l4_count++;
-                    updateMission("HATALI ÜRÜN AYIKLA", "Ayıklanan: " + l4_count);
+                    updateMission("ZARARLI ÜRÜN YOK ET", "Ayıklanan: " + l4_count);
                     
                     el.style.transform = 'scale(0) rotate(180deg) transition: 0.3s';
                     setTimeout(() => el.remove(), 200);
@@ -1332,7 +1469,7 @@
             showScreen('screen-end');
             let title = "", desc = "", bonus = 0;
             if(choice === 'kumbara') { title = "Tasarruf Ustası!"; desc = "Anadolu usulü birikimi seçtin. Ak akçe kara gün içindir."; bonus = Math.floor(gameState.score * 0.1); }
-            else if(choice === 'agac') { title = "Doğa Dostu!"; desc = "Geleceğe nefes oldun. Ağaçlar büyüyüp meyve verecek."; bonus = Math.floor(gameState.score * 0.3); }
+            else if(choice === 'agac') { title = "Doğa Dostu!"; desc = "Geleceğe nefes oldun. Diktiğin ağaçlar büyüdükçe hem doğa kazanacak hem de meyve verecek."; bonus = Math.floor(gameState.score * 0.3); }
             else if(choice === 'kobi') { title = "Yerli Kahraman!"; desc = "Esnaf kazandı, ekonomi canlandı!"; bonus = Math.floor(gameState.score * 0.5); }
             gameState.score += bonus;
             document.getElementById('end-title').innerText = title;
